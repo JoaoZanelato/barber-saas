@@ -3,20 +3,34 @@ import { Login } from "./pages/Login/Login";
 import { Dashboard } from "./pages/Dashbord/Dashboard";
 import { SaaSAdmin } from "./pages/Admin/SaaSAdmin";
 
-// Use "export function" (sem default)
+function PrivateRoute({ children }: { children: JSX.Element }) {
+  const token = localStorage.getItem("barber:token");
+  return token ? children : <Navigate to="/" replace />;
+}
+
 export function App() {
   return (
     <Routes>
-      {/* Rota Pública (Login) */}
       <Route path="/" element={<Login />} />
 
-      {/* Rota Privada (Dashboard da Barbearia) */}
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        }
+      />
 
-      {/* Rota do Super Admin*/}
-      <Route path="/saas" element={<SaaSAdmin />} />
+      <Route
+        path="/saas"
+        element={
+          <PrivateRoute>
+            <SaaSAdmin />
+          </PrivateRoute>
+        }
+      />
 
-      {/* Qualquer outra rota volta para o Login */}
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

@@ -1,16 +1,19 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Home, Store, Clock } from "lucide-react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Home, Store } from "lucide-react-native";
 import { colors } from "../theme/colors";
 
 // Importação das telas
 import { BarberDashboard } from "../screens/Barber/Home";
 import { StoreConfig } from "../screens/Barber/StoreConfig";
-import { Availability } from "../screens/Barber/Availability"; // <--- Importe a nova tela
+import { Availability } from "../screens/Barber/Availability";
+import { BarberAgenda } from "../screens/Barber/Agenda";
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-export function BarberRoutes() {
+function BarberTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -44,18 +47,23 @@ export function BarberRoutes() {
         }}
       />
 
-      {/* Tela de Disponibilidade (Horários)
-         Truque: Adicionamos aqui para ficar registrada na navegação,
-         mas usamos 'tabBarButton: () => null' para NÃO aparecer ícone no rodapé.
-      */}
       <Tab.Screen
         name="Availability"
         component={Availability}
         options={{
-          tabBarButton: () => null, // Esconde o botão na barra inferior
-          tabBarStyle: { display: "none" }, // Esconde a barra inferior quando estiver nessa tela (opcional)
+          tabBarButton: () => null,
+          tabBarStyle: { display: "none" },
         }}
       />
     </Tab.Navigator>
+  );
+}
+
+export function BarberRoutes() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="BarberTabs" component={BarberTabs} />
+      <Stack.Screen name="BarberAgenda" component={BarberAgenda} />
+    </Stack.Navigator>
   );
 }

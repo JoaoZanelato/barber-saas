@@ -22,14 +22,11 @@ export function Login() {
     try {
       const response = await api.post("/login", { email, password });
 
-      // Pega o usuário da resposta
-      const { user } = response.data;
+      const user = response.data;
 
-      // Salva no localStorage para usar em outras telas (ex: mostrar nome no Header)
+      localStorage.setItem("barber:token", user.token);
       localStorage.setItem("barber:user", JSON.stringify(user));
 
-      // --- O PULO DO GATO 🐈 ---
-      // Verifica o cargo e redireciona
       if (user.role === "super_admin") {
         navigate("/saas"); // Painel do Dono do SaaS
       } else {

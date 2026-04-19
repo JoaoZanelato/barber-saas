@@ -33,12 +33,13 @@ export class CronService {
             gte: oneHourFromNow,
             lte: timeWindowEnd,
           },
-          status: "SCHEDULED",
-          reminder_sent: false, // Só quem ainda não recebeu
+          status: "scheduled",
+          reminder_sent: false,
         },
         include: {
           users: { select: { push_token: true, name: true } },
           customers: { select: { name: true, phone: true } },
+          app_client: { select: { push_token: true, name: true } },
         },
       });
 
@@ -56,20 +57,15 @@ export class CronService {
           );
         }
 
-        // B. Avisar Cliente
-        if (appt.customers?.phone) {
-          const appClient = await prisma.app_clients.findUnique({
-            where: { phone: appt.customers.phone },
-            select: { push_token: true, name: true },
-          });
-
-          if (appClient?.push_token) {
-            await notificationService.send(
-              appClient.push_token,
-              "⏰ Lembrete de Corte",
-              `Olá ${appClient.name}, seu horário é daqui a pouco, às ${format(appt.start_time, "HH:mm")}.`,
-            );
-          }
+        // B. Avisar Cliente (via app_client direto ou lookup por phone)
+        const clientToken = appt.app_client?.push_token;
+        const clientName = appt.app_client?.name ?? appt.customers?.name ?? "Cliente";
+        if (clientToken) {
+          await notificationService.send(
+            clientToken,
+            "⏰ Lembrete de Corte",
+            `Olá ${clientName}, seu horário é daqui a pouco, às ${format(appt.start_time, "HH:mm")}.`,
+          );
         }
 
         // Marca como enviado para não repetir
@@ -97,7 +93,7 @@ export class CronService {
             gte: timeWindowStart,
             lte: fifteenMinsAgo,
           },
-          status: "SCHEDULED", // Ainda não foi finalizado no sistema
+          status: "scheduled",
           feedback_sent: false,
         },
         include: {

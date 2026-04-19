@@ -15,6 +15,7 @@ import { TenantController } from "../controllers/TenantController";
 import { NotificationController } from "../controllers/NotificationController";
 import { MobileFavoriteController } from "../controllers/MobileFavoriteController";
 import { ReviewController } from "../controllers/ReviewController";
+import { BlockedSlotController } from "../controllers/BlockedSlotController";
 
 // Middlewares
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
@@ -48,6 +49,7 @@ const mobileAuthController = new MobileAuthController();
 const notificationController = new NotificationController();
 const mobileFavoriteController = new MobileFavoriteController();
 const reviewController = new ReviewController();
+const blockedSlotController = new BlockedSlotController();
 
 // ==========================================================
 // 🌍 ROTAS PÚBLICAS (Sem Autenticação)
@@ -130,6 +132,11 @@ router.patch(
   ensureMobileAuth,
   appointmentController.cancelMobile,
 );
+router.post(
+  "/mobile/appointments/:id/reschedule",
+  ensureMobileAuth,
+  (req, res) => appointmentController.reschedule(req, res),
+);
 
 // Favoritos
 router.get(
@@ -183,8 +190,13 @@ router.post("/professionals", professionalController.create);
 router.delete("/professionals/:id", professionalController.delete);
 
 // Gestão de Agendamentos (Agenda do Barbeiro)
-router.get("/appointments", appointmentController.list); // ou .index
-router.post("/appointments", appointmentController.create); // ou .store
-router.patch("/appointments/:id", appointmentController.updateStatus); // ou .update
+router.get("/appointments", appointmentController.index);
+router.post("/appointments", appointmentController.store);
+router.patch("/appointments/:id", appointmentController.update);
+
+// Gestão de Bloqueios (Férias, Pausas)
+router.get("/blocked-slots", blockedSlotController.index);
+router.post("/blocked-slots", blockedSlotController.store);
+router.delete("/blocked-slots/:id", blockedSlotController.delete);
 
 export { router };

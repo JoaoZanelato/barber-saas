@@ -166,7 +166,54 @@ export class AppointmentController {
     return res.status(200).send();
   }
 
-  // 5. ATUALIZAR STATUS (Painel Web - Barbeiro)
+  // 5. REAGENDAMENTO (App Cliente)
+  async reschedule(req: Request, res: Response) {
+    const { id } = req.params;
+    const { start_time } = req.body;
+    const client_id = (req as any).user_id;
+
+    if (!start_time) {
+      return res.status(400).json({ error: "start_time é obrigatório." });
+    }
+
+    const original = await prisma.appointments.findUnique({
+      where: { id },
+      include: { services: true },
+    });
+
+    if (!original || original.app_client_id !== client_id) {
+      return res
+        .status(404)
+        .json({ error: "Agendamento não encontrado ou não autorizado." });
+    }
+
+    const service = original.services!;
+
+    const newAppointment = await prisma.appointments.create({
+      data: {
+        tenant_id: original.tenant_id,
+        professional_id: original.professional_id,
+        service_id: original.service_id,
+        app_client_id: client_id,
+        start_time: new Date(start_time),
+        end_time: new Date(
+          new Date(start_time).getTime() + service.duration_minutes * 60000,
+        ),
+        total_price: original.total_price,
+        original_appointment_id: id,
+        reschedule_count: (original.reschedule_count ?? 0) + 1,
+      },
+    });
+
+    await prisma.appointments.update({
+      where: { id },
+      data: { status: "cancelled" },
+    });
+
+    return res.status(201).json(newAppointment);
+  }
+
+  // 6. ATUALIZAR STATUS (Painel Web - Barbeiro)
   async update(req: Request, res: Response) {
     const { id } = req.params;
     const { status } = req.body;
