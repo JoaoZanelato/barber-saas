@@ -169,7 +169,7 @@ router.post("/notifications/token", notificationController.saveBarberToken);
 router.delete("/notifications/token", notificationController.removeBarberToken);
 
 // Dashboard & Métricas
-router.get("/dashboard/metrics", dashboardController.handle); // Alterado de .index para .handle conforme seu controller
+router.get("/dashboard/metrics", dashboardController.index);
 
 // Configuração da Loja (Tenant)
 router.get("/tenants", tenantController.index);
