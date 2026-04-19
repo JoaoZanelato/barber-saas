@@ -180,12 +180,12 @@ router.get("/availability", availabilityController.index); // Ver configuração
 router.put("/availability", availabilityController.update); // Salvar nova configuração
 
 // Gestão de Serviços
-router.get("/services", serviceController.index); // ou .list dependendo do seu controller
+router.get("/services", serviceController.list);
 router.post("/services", serviceController.create);
 router.delete("/services/:id", serviceController.delete);
 
 // Gestão de Profissionais
-router.get("/professionals", professionalController.index); // ou .list
+router.get("/professionals", professionalController.list);
 router.post("/professionals", professionalController.create);
 router.delete("/professionals/:id", professionalController.delete);
 
