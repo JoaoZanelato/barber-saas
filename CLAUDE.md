@@ -41,6 +41,10 @@ Postura: Engenheiro de Software Sênior pragmático, focado em MVP e KISS. Siga 
 
 ## Context Navigation (Integração Graphify)
 
+**Gatilho Obrigatório (Pre-Hook):**
+ANTES de invocar qualquer skill de exploração (`claude-mem:smart-explore`) ou ler o arquivo `graphify-out/GRAPH_REPORT.md`, você DEVE obrigatoriamente executar o comando `graphify update .` no terminal. 
+*Apenas prossiga com a leitura após o terminal confirmar que o Grafo foi atualizado.*
+
 **Ordem obrigatória de consulta:**
 1. `graphify-out/GRAPH_REPORT.md` → God Nodes, dependências, comunidades
 2. `claude-mem:smart-explore` → estrutura AST sem ler arquivos completos
